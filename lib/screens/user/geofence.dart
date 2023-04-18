@@ -31,6 +31,7 @@ class _GeoFenceState extends State<GeoFence> {
 
   LatLng? enterPos;
   LatLng? exitPos;
+  String lastPolygonIn = "";
 
   _setMarker({String? markerID, required LatLng pos}) async {
     MarkerId markerId = MarkerId(markerID ?? DateTime.now().toString());
@@ -133,6 +134,8 @@ class _GeoFenceState extends State<GeoFence> {
           "diseaseKey": poly.polygonId.value
         }, callback: (code, message) {});
 
+        lastPolygonIn = poly.polygonId.value;
+
         enterPos ??= currentPost;
         exitPos = currentPost;
 
@@ -140,27 +143,18 @@ class _GeoFenceState extends State<GeoFence> {
             double.parse(calculateDistance(currentPost, enterPos!));
 
         if (distance == 0.0) {
-          print("PLAY AUDIO");
           AudioPlayer().play(AssetSource('sounds/enter.mp3'));
         }
-
-        // if (distance > .01 && distance < .02) {
-        //   AudioPlayer().play(AssetSource('sounds/alert.mp3'));
-        // }
-        // print(
-        //     "calculateDistance ENTER ${double.parse(calculateDistance(currentPost, enterPos!))}");
+      } else {
+        if (exitPos != null &&
+            double.parse(calculateDistance(currentPost, exitPos!)) > 0 &&
+            lastPolygonIn == poly.polygonId.value) {
+          AudioPlayer().play(AssetSource('sounds/exit.mp3'));
+          enterPos = null;
+          exitPos = null;
+          lastPolygonIn = "";
+        }
       }
-
-      // else {
-      //   if (exitPos != null &&
-      //       double.parse(calculateDistance(currentPost, exitPos!)) == 0) {
-      //     print(
-      //         "calculateDistance EXIT ${double.parse(calculateDistance(currentPost, exitPos!))}");
-      //     AudioPlayer().play(AssetSource('sounds/exit.mp3'));
-      //     enterPos = null;
-      //     exitPos = null;
-      //   }
-      // }
 
       return isInside;
     });
