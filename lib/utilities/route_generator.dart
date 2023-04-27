@@ -1,5 +1,6 @@
 import 'package:alert_up_user/screens/initialize.dart';
 import 'package:alert_up_user/screens/user/geofence.dart';
+import 'package:alert_up_user/screens/user/index.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -12,7 +13,7 @@ class RouteGenerator {
         return MaterialPageRoute(builder: (_) => Initialize());
 
       case '/user':
-        return MaterialPageRoute(builder: (_) => GeoFence());
+        return MaterialPageRoute(builder: (_) => UserHome());
       default:
         return _errorRoute();
     }

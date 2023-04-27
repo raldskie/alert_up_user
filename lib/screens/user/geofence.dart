@@ -233,29 +233,6 @@ class _GeoFenceState extends State<GeoFence> {
     DiseasesProvider diseasesProvider = context.watch<DiseasesProvider>();
 
     return Scaffold(
-      appBar:
-          customAppBar(context, title: "Alert Up", centerTitle: true, actions: [
-        Button(
-            icon: Icons.person_pin,
-            label: "Your ID",
-            borderColor: Colors.transparent,
-            backgroundColor: Colors.transparent,
-            textColor: ACCENT_COLOR,
-            onPress: () async {
-              // final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
-              // var build = await deviceInfoPlugin.androidInfo;
-              // String uniqueId = build.id;
-              String? deviceId = await PlatformDeviceId.getDeviceId;
-              if (!mounted) return;
-              showDialog<String>(
-                  context: context,
-                  builder: (BuildContext context) => Dialog(
-                        child: UserDeviceId(
-                          uniqueId: deviceId!,
-                        ),
-                      ));
-            })
-      ]),
       body: diseasesProvider.loading == "classified_list"
           ? const Center(child: CircularProgressIndicator())
           : GoogleMap(

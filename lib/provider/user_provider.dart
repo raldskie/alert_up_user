@@ -13,6 +13,9 @@ class UserProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  List<DataSnapshot> _posters = [];
+  List<DataSnapshot> get posters => _posters;
+
   userLogin({required Map payload, required Function callback}) async {
     setLoading("login");
 
@@ -45,7 +48,10 @@ class UserProvider extends ChangeNotifier {
         FirebaseDatabase.instance.ref("covid_tool/trigger/user_enter");
     try {
       setLoading("disease_add");
-      await diseaseRef.child(payload['deviceId']).set({...payload});
+      await diseaseRef.child(payload['deviceId']).set({
+        ...payload,
+        "createdAt": DateTime.now().toLocal().toIso8601String()
+      });
       await Future.delayed(const Duration(milliseconds: 500));
       callback(200, FETCH_SUCCESS);
       setLoading("stop");
@@ -71,6 +77,21 @@ class UserProvider extends ChangeNotifier {
           }
         }
       }
+    });
+  }
+
+  getPosterList({required Function callback}) async {
+    setLoading("poster_list");
+    Query diseaseRef = FirebaseDatabase.instance.ref("posters");
+
+    diseaseRef.onValue.listen((event) async {
+      _posters = event.snapshot.children.toList();
+      await Future.delayed(const Duration(milliseconds: 500));
+      setLoading("stop");
+      callback(200, FETCH_SUCCESS);
+    }, onError: (error) {
+      setLoading("stop");
+      callback(500, FETCH_ERROR);
     });
   }
 }
